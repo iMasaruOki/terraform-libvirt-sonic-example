@@ -33,7 +33,7 @@ resource "libvirt_domain" "domain-sonic" {
   disk { volume_id = libvirt_volume.os-image[each.key].id }
 
   dynamic network_interface {
-    for_each = toset(each.value)
+    for_each = each.value
     content {
       network_name = network_interface.value
       mac = format("52:54:00:12:%02X:%02X",
