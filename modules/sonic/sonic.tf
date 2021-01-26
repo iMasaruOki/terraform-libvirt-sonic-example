@@ -8,38 +8,38 @@ terraform {
   }
 }
 
-variable "hostname" { default = "sonic" }
 variable "memory" { default = "2048" }
 variable "cpu" { default = 1 }
-variable "eth0" { default = "default" }
-variable "Ethernet0" { default = "default" }
-variable "Ethernet4" { default = "default" }
+variable "hosts" { type = map(list(string)) }
+variable "eth0" { default = [ "default" ] }
 
 provider "libvirt" {
   uri = "qemu:///system"
 }
 
 resource "libvirt_volume" "os-image" {
-  name = "${var.hostname}-disk.qcow2"
+  for_each = var.hosts
+  name = "${each.key}-disk.qcow2"
   source = "${path.module}/sonic-vs.img"
   format = "qcow2"
 }
 
 resource "libvirt_domain" "domain-sonic" {
-  name = var.hostname
+  for_each = var.hosts
+  name = each.key
   memory = var.memory
   vcpu = var.cpu
 
-  disk { volume_id = libvirt_volume.os-image.id }
+  disk { volume_id = libvirt_volume.os-image[each.key].id }
 
-  network_interface {
-    network_name = var.eth0
-  }
-  network_interface {
-    network_name = var.Ethernet0
-  }
-  network_interface {
-    network_name = var.Ethernet4
+  dynamic network_interface {
+    for_each = toset(each.value)
+    content {
+      network_name = network_interface.value
+      mac = format("52:54:00:12:%02X:%02X",
+                   index(keys(var.hosts), each.key),
+                   index(values(network_interface), network_interface.value))
+    }
   }
 
   console {

@@ -8,20 +8,24 @@ terraform {
   }
 }
 
-resource "libvirt_network" "s1-s2" {
-  name = "c1"
+locals {
+  hosts = {
+    "s0" = [ "default", "c0", "c2" ],
+    "s1" = [ "default", "c1", "c3" ],
+    "s2" = [ "default", "c0", "c3" ],
+    "s3" = [ "default", "c1", "c2" ]
+  }
+}
+
+
+resource "libvirt_network" "cable" {
+  count = 4
+  name = "c${count.index}"
   mode = "none"
   dns { local_only = true }
 }
 
-module "sonic-1" {
+module "sonic" {
   source = "./modules/sonic"
-  hostname = "s1"
-  Ethernet0 = "c1"
-}
-
-module "sonic-2" {
-  source = "./modules/sonic"
-  hostname = "s2"
-  Ethernet0 = "c1"
+  hosts = local.hosts
 }
