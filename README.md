@@ -3,8 +3,8 @@
 Abstract
 --------
 
-Two SONiC VMs are deployed with Terraform.
-VMs are connected via virtual network.
+- Two SONiC VMs are deployed with Terraform.
+- VMs are connected via virtual network.
 
 
 Topology
@@ -23,10 +23,10 @@ eth0|                              |eth0
 Requirement
 -----------
 
-libvirt
-qemu-kvm
-Terraform
-terraform-provider-libvirt
+- libvirt
+- qemu-kvm
+- Terraform
+- terraform-provider-libvirt
 
 
 Prepare
@@ -38,6 +38,7 @@ Usage
 -----
 
 1. Run Terraform.
+
 ```
 cd terraform-libvirt-sonic-example
 terraform init
