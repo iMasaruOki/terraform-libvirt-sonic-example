@@ -8,8 +8,17 @@ terraform {
   }
 }
 
-resource "libvirt_network" "cable" {
-  for_each = toset(local.cables)
+resource "libvirt_network" "hostnet" {
+  name = "hostnet"
+  mode = "route"
+  addresses = [ "100.64.0.0/10" ]
+  dhcp {
+       enabled = true
+  }
+}
+
+resource "libvirt_network" "private_network" {
+  for_each = toset(local.private_network)
   name = each.key
   mode = "none"
   dns { local_only = true }
