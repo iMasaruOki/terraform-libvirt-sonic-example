@@ -1,13 +1,24 @@
+#
+# sonic_hosts = {
+#   "VMname1" = {
+#     "cpu" = 1,
+#     "mem" = 2048,
+#     "nic" = [ "eth0-network", "Ethernet0-network", ... ]
+#   },
+#   "VMname2" = {
+#     ...
+#   }
+#
+
 locals {
-  cables = [ "c0", "c1", "c2", "c3" ]
+  private_network = [ "l2sw0", "c0", "c1", "c2", "c3" ]
   debian_hosts = {
-  // VMname     eth0       eth1       eth2  ...
+    "d0" = { "nic" = [ "hostnet", "l2sw0" ] }
   }
   sonic_hosts = {
-  // VMname     eth0       Ethernet0  Ethernet4  ...
-    "s0"    = [ "default", "c0",      "c2" ],
-    "s1"    = [ "default", "c1",      "c3" ],
-    "s2"    = [ "default", "c0",      "c3" ],
-    "s3"    = [ "default", "c1",      "c2" ]
+    "s0" = { "nic" = [ "hostnet", "c0", "c2", "l2sw0" ] },
+    "s1" = { "nic" = [ "hostnet", "c1", "c3", "l2sw0" ] },
+    "s2" = { "nic" = [ "hostnet", "c0", "c3" ] },
+    "s3" = { "nic" = [ "hostnet", "c1", "c2" ] }
   }
 }

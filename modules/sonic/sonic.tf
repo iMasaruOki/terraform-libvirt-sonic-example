@@ -8,9 +8,7 @@ terraform {
   }
 }
 
-variable "memory" { default = "2048" }
-variable "cpu" { default = 1 }
-variable "hosts" { type = map(list(string)) }
+variable "hosts" { }
 
 provider "libvirt" {
   uri = "qemu:///system"
@@ -26,13 +24,13 @@ resource "libvirt_volume" "os-image" {
 resource "libvirt_domain" "domain-sonic" {
   for_each = var.hosts
   name = each.key
-  memory = var.memory
-  vcpu = var.cpu
+  memory = lookup(each.value, "mem", null) != null ? each.value["mem"] : 2048
+  vcpu =  lookup(each.value, "cpu", null) != null ? each.value["cpu"] : 1
 
   disk { volume_id = libvirt_volume.os-image[each.key].id }
 
   dynamic network_interface {
-    for_each = each.value
+    for_each = each.value["nic"]
     content {
       network_name = network_interface.value
       mac = format("52:54:00:12:%02X:%02X",
