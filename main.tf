@@ -8,24 +8,19 @@ terraform {
   }
 }
 
-locals {
-  hosts = {
-    "s0" = [ "default", "c0", "c2" ],
-    "s1" = [ "default", "c1", "c3" ],
-    "s2" = [ "default", "c0", "c3" ],
-    "s3" = [ "default", "c1", "c2" ]
-  }
-}
-
-
 resource "libvirt_network" "cable" {
-  count = 4
-  name = "c${count.index}"
+  for_each = toset(local.cables)
+  name = each.key
   mode = "none"
   dns { local_only = true }
 }
 
+module "debian" {
+  source = "./modules/debian"
+  hosts = local.debian_hosts
+}
+
 module "sonic" {
   source = "./modules/sonic"
-  hosts = local.hosts
+  hosts = local.sonic_hosts
 }
