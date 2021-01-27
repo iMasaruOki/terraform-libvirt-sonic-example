@@ -69,3 +69,9 @@ terraform apply
 2. `sudo rm /etc/sonic/config_db.json; sudo config-setup factory` for each VM.
 
 3. Reboot all VMs.
+
+
+How to customize
+----------------
+
+Edit config.tf.
