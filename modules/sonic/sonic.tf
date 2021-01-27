@@ -11,7 +11,6 @@ terraform {
 variable "memory" { default = "2048" }
 variable "cpu" { default = 1 }
 variable "hosts" { type = map(list(string)) }
-variable "eth0" { default = [ "default" ] }
 
 provider "libvirt" {
   uri = "qemu:///system"
